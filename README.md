@@ -172,7 +172,7 @@ AVR, EEPROM
     </td>
   </tr>
 
-  <tr">
+  <tr>
     <td valign="top" style="padding: 0 10px;">
       <h3 style="margin: 0;">
         <a href="https://youtu.be/d8H9xRyfYPI">aKaReZa 134 – AVR, EEPROM – PART B</a>
