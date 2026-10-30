@@ -25,7 +25,7 @@
  *                  → Fast operation (~4 CPU cycles)
  * 
  *           3. Update Operation Flow (Wear-Leveling):
- *              └─> e2prom_xxx_Upate() → Read current value from EEPROM
+ *              └─> e2prom_xxx_Update() → Read current value from EEPROM
  *                  → Compare with new value
  *                  → If different: Write new value → Else: Skip (save write cycle)
  * 
@@ -61,10 +61,10 @@
  *           - e2prom_block_Read       : Read byte array
  *
  *           Update Functions (Wear-Leveling):
- *           - e2prom_uint8/16/32_Upate : Update unsigned (compare-then-write)
- *           - e2prom_float_Upate       : Update float (epsilon comparison)
- *           - e2prom_int8/16/32_Upate  : Update signed (compare-then-write)
- *           - e2prom_block_Upate       : Update block byte-by-byte
+ *           - e2prom_uint8/16/32_Update : Update unsigned (compare-then-write)
+ *           - e2prom_float_Update       : Update float (epsilon comparison)
+ *           - e2prom_int8/16/32_Update  : Update signed (compare-then-write)
+ *           - e2prom_block_Update       : Update block byte-by-byte
  *
  *           Utility:
  *           - e2prom_Format : Erase entire EEPROM (write 0xFF to all 1024 bytes)
@@ -322,7 +322,7 @@ void e2prom_block_Read(uint16_t _address, uint8_t *_Data, uint16_t _length)
  *       Writes only if new value differs from stored value
  *       Extends EEPROM lifespan by avoiding unnecessary write cycles
  * ------------------------------------------------------- */
-void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value)
+void e2prom_uint8_Update(uint16_t _address, uint8_t _Value)
 {
     uint8_t _Data = 0x00;                                  /**< Storage for current EEPROM value */
 
@@ -342,7 +342,7 @@ void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value)
  * @retval None
  * @note Reduces EEPROM wear by comparing before writing
  * ------------------------------------------------------- */
-void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value)
+void e2prom_uint16_Update(uint16_t _address, uint16_t _Value)
 {
     uint16_t _Data = 0x00;                                 /**< Storage for current EEPROM value */
 
@@ -362,7 +362,7 @@ void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value)
  * @retval None
  * @note Reduces EEPROM wear by comparing before writing
  * ------------------------------------------------------- */
-void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value)
+void e2prom_uint32_Update(uint16_t _address, uint32_t _Value)
 {
     uint32_t _Data = 0x00;                                 /**< Storage for current EEPROM value */
 
@@ -383,7 +383,7 @@ void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value)
  * @note Uses epsilon comparison (0.0000001) for float equality
  *       Writes only if difference exceeds epsilon tolerance
  * ------------------------------------------------------- */
-void e2prom_float_Upate(uint16_t _address, float _Value)
+void e2prom_float_Update(uint16_t _address, float _Value)
 {
     float _Data = 0.0;                                     /**< Storage for current EEPROM value */
 
@@ -405,14 +405,14 @@ void e2prom_float_Upate(uint16_t _address, float _Value)
  * @note Compares and updates each byte individually
  *       Most efficient for partial block updates
  * ------------------------------------------------------- */
-void e2prom_block_Upate(uint16_t _address, uint8_t *_Data, uint16_t _length)
+void e2prom_block_Update(uint16_t _address, uint8_t *_Data, uint16_t _length)
 {
     uint16_t _Index = 0;                                   /**< Loop counter for array iteration */
     
     /* Update each byte individually using wear-leveling */
     for(_Index = 0; _Index < _length; _Index++)            /**< Loop through all bytes */
     {
-        e2prom_uint8_Upate((_address + _Index), _Data[_Index]);  /**< Update byte only if different */
+        e2prom_uint8_Update((_address + _Index), _Data[_Index]);  /**< Update byte only if different */
     };
 };
 
@@ -559,7 +559,7 @@ void e2prom_int32_Read(uint16_t _address, int32_t* _Value)
  * @retval None
  * @note Wear-leveling optimization for signed values
  * ------------------------------------------------------- */
-void e2prom_int8_Upate(uint16_t _address, int8_t _Value)
+void e2prom_int8_Update(uint16_t _address, int8_t _Value)
 {
     int8_t _Data = 0x00;                                   /**< Storage for current EEPROM value */
 
@@ -579,7 +579,7 @@ void e2prom_int8_Upate(uint16_t _address, int8_t _Value)
  * @retval None
  * @note Reduces EEPROM wear by comparing before writing
  * ------------------------------------------------------- */
-void e2prom_int16_Upate(uint16_t _address, int16_t _Value)
+void e2prom_int16_Update(uint16_t _address, int16_t _Value)
 {
     int16_t _Data = 0x00;                                  /**< Storage for current EEPROM value */
 
@@ -600,7 +600,7 @@ void e2prom_int16_Upate(uint16_t _address, int16_t _Value)
  * @note Reduces EEPROM wear by comparing before writing
  *       Saves up to 4 write cycles (13.2ms) if value unchanged
  * ------------------------------------------------------- */
-void e2prom_int32_Upate(uint16_t _address, int32_t _Value)
+void e2prom_int32_Update(uint16_t _address, int32_t _Value)
 {
     int32_t _Data = 0x00;                                  /**< Storage for current EEPROM value */
 
@@ -641,6 +641,6 @@ void e2prom_Format(void)
     /* Write 0xFF (erased state) to entire EEPROM */
     for(_Index = 0; _Index < 1024; _Index++)               /**< Loop through all 1024 bytes (ATmega328P size) */
     {
-        e2prom_uint8_Write(_Index, 0xFF);                  /**< Write erased value (0xFF) to current address */
+        e2prom_uint8_Update(_Index, 0xFF);                  /**< Write erased value (0xFF) to current address */
     };    
 };

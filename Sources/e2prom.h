@@ -31,14 +31,14 @@
  *           - e2prom_block_Read     : Read array of bytes (multiple bytes)
  *
  *           Update Functions (uint8, uint16, uint32, float, int8, int16, int32, block):
- *           - e2prom_uint8_Upate    : Update 8-bit value (read-compare-write if different)
- *           - e2prom_uint16_Upate   : Update 16-bit value (wear-leveling)
- *           - e2prom_uint32_Upate   : Update 32-bit value (wear-leveling)
- *           - e2prom_float_Upate    : Update float value (with epsilon comparison)
- *           - e2prom_int8_Upate     : Update signed 8-bit value (wear-leveling)
- *           - e2prom_int16_Upate    : Update signed 16-bit value (wear-leveling)
- *           - e2prom_int32_Upate    : Update signed 32-bit value (wear-leveling)
- *           - e2prom_block_Upate    : Update block of bytes (byte-by-byte comparison)
+ *           - e2prom_uint8_Update    : Update 8-bit value (read-compare-write if different)
+ *           - e2prom_uint16_Update   : Update 16-bit value (wear-leveling)
+ *           - e2prom_uint32_Update   : Update 32-bit value (wear-leveling)
+ *           - e2prom_float_Update    : Update float value (with epsilon comparison)
+ *           - e2prom_int8_Update     : Update signed 8-bit value (wear-leveling)
+ *           - e2prom_int16_Update    : Update signed 16-bit value (wear-leveling)
+ *           - e2prom_int32_Update    : Update signed 32-bit value (wear-leveling)
+ *           - e2prom_block_Update    : Update block of bytes (byte-by-byte comparison)
  *
  *           Utility Functions:
  *           - e2prom_Format         : Erase entire EEPROM (write 0xFF to all addresses)
@@ -79,7 +79,7 @@
  *           e2prom_uint16_Read(0x0000, &value);   // Read uint16 from address 0
  *           
  *           // Update (wear-leveling)
- *           e2prom_uint16_Upate(0x0000, 5678);    // Only writes if different
+ *           e2prom_uint16_Update(0x0000, 5678);    // Only writes if different
  *           
  *           // Format entire EEPROM
  *           e2prom_Format();                      // Write 0xFF to all locations
@@ -277,7 +277,7 @@ void e2prom_block_Read(uint16_t _address, uint8_t *_Data, uint16_t _length);
  * @note Reads current value first, writes only if different
  *       Extends EEPROM lifespan by reducing write cycles
  */
-void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value);
+void e2prom_uint8_Update(uint16_t _address, uint8_t _Value);
 
 /**
  * @brief Update unsigned 16-bit value (write only if different)
@@ -286,7 +286,7 @@ void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value);
  * @retval None
  * @note Wear-leveling optimization
  */
-void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value);
+void e2prom_uint16_Update(uint16_t _address, uint16_t _Value);
 
 /**
  * @brief Update unsigned 32-bit value (write only if different)
@@ -295,7 +295,7 @@ void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value);
  * @retval None
  * @note Wear-leveling optimization
  */
-void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value);
+void e2prom_uint32_Update(uint16_t _address, uint32_t _Value);
 
 /**
  * @brief Update float value (write only if significantly different)
@@ -304,7 +304,7 @@ void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value);
  * @retval None
  * @note Uses epsilon comparison for float equality check
  */
-void e2prom_float_Upate(uint16_t _address, float _Value);
+void e2prom_float_Update(uint16_t _address, float _Value);
 
 /**
  * @brief Update block of bytes (write only changed bytes)
@@ -314,7 +314,7 @@ void e2prom_float_Upate(uint16_t _address, float _Value);
  * @retval None
  * @note Compares each byte individually, writes only differences
  */
-void e2prom_block_Upate(uint16_t _address, uint8_t *_Data, uint16_t _length);
+void e2prom_block_Update(uint16_t _address, uint8_t *_Data, uint16_t _length);
 
 
 /* ============================================================================
@@ -390,7 +390,7 @@ void e2prom_int32_Read(uint16_t _address, int32_t* _Value);
  * @retval None
  * @note Wear-leveling optimization
  */
-void e2prom_int8_Upate(uint16_t _address, int8_t _Value);
+void e2prom_int8_Update(uint16_t _address, int8_t _Value);
 
 /**
  * @brief Update signed 16-bit value (write only if different)
@@ -399,7 +399,7 @@ void e2prom_int8_Upate(uint16_t _address, int8_t _Value);
  * @retval None
  * @note Wear-leveling optimization
  */
-void e2prom_int16_Upate(uint16_t _address, int16_t _Value);
+void e2prom_int16_Update(uint16_t _address, int16_t _Value);
 
 /**
  * @brief Update signed 32-bit value (write only if different)
@@ -408,7 +408,7 @@ void e2prom_int16_Upate(uint16_t _address, int16_t _Value);
  * @retval None
  * @note Wear-leveling optimization
  */
-void e2prom_int32_Upate(uint16_t _address, int32_t _Value);
+void e2prom_int32_Update(uint16_t _address, int32_t _Value);
 
 
 /* ============================================================================
