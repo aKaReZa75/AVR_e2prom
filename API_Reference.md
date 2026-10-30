@@ -271,7 +271,7 @@ e2prom_block_Read(0x0050, myBuffer, 5); /**< Read 5 bytes starting from address 
 ### **Update Unsigned 8-bit Value**
 
 ```c
-void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value);
+void e2prom_uint8_Update(uint16_t _address, uint8_t _Value);
 ```
 
 * Updates an 8-bit value only if it differs from the current stored value.
@@ -285,7 +285,7 @@ void e2prom_uint8_Upate(uint16_t _address, uint8_t _Value);
 **Example:**
 
 ```c
-e2prom_uint8_Upate(0x0000, 99); /**< Write only if current value is not 99 */
+e2prom_uint8_Update(0x0000, 99); /**< Write only if current value is not 99 */
 ```
 
 ---
@@ -293,7 +293,7 @@ e2prom_uint8_Upate(0x0000, 99); /**< Write only if current value is not 99 */
 ### **Update Unsigned 16-bit Value**
 
 ```c
-void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value);
+void e2prom_uint16_Update(uint16_t _address, uint16_t _Value);
 ```
 
 * Updates a 16-bit value with wear-leveling optimization.
@@ -306,7 +306,7 @@ void e2prom_uint16_Upate(uint16_t _address, uint16_t _Value);
 **Example:**
 
 ```c
-e2prom_uint16_Upate(0x0010, 5678); /**< Update only if different from stored value */
+e2prom_uint16_Update(0x0010, 5678); /**< Update only if different from stored value */
 ```
 
 ---
@@ -314,7 +314,7 @@ e2prom_uint16_Upate(0x0010, 5678); /**< Update only if different from stored val
 ### **Update Unsigned 32-bit Value**
 
 ```c
-void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value);
+void e2prom_uint32_Update(uint16_t _address, uint32_t _Value);
 ```
 
 * Updates a 32-bit value with wear-leveling optimization.
@@ -327,7 +327,7 @@ void e2prom_uint32_Upate(uint16_t _address, uint32_t _Value);
 **Example:**
 
 ```c
-e2prom_uint32_Upate(0x0020, 2000000UL); /**< Update only if different */
+e2prom_uint32_Update(0x0020, 2000000UL); /**< Update only if different */
 ```
 
 ---
@@ -335,7 +335,7 @@ e2prom_uint32_Upate(0x0020, 2000000UL); /**< Update only if different */
 ### **Update Float Value**
 
 ```c
-void e2prom_float_Upate(uint16_t _address, float _Value);
+void e2prom_float_Update(uint16_t _address, float _Value);
 ```
 
 * Updates a float value with epsilon comparison for equality.
@@ -349,7 +349,7 @@ void e2prom_float_Upate(uint16_t _address, float _Value);
 **Example:**
 
 ```c
-e2prom_float_Upate(0x0100, 2.71828); /**< Update only if significantly different */
+e2prom_float_Update(0x0100, 2.71828); /**< Update only if significantly different */
 ```
 
 ---
@@ -357,7 +357,7 @@ e2prom_float_Upate(0x0100, 2.71828); /**< Update only if significantly different
 ### **Update Block of Bytes**
 
 ```c
-void e2prom_block_Upate(uint16_t _address, uint8_t *_Data, uint16_t _length);
+void e2prom_block_Update(uint16_t _address, uint8_t *_Data, uint16_t _length);
 ```
 
 * Updates multiple bytes, writing only those that have changed.
@@ -372,7 +372,7 @@ void e2prom_block_Upate(uint16_t _address, uint8_t *_Data, uint16_t _length);
 
 ```c
 uint8_t newData[5] = {11, 22, 33, 44, 55};
-e2prom_block_Upate(0x0050, newData, 5); /**< Update only changed bytes */
+e2prom_block_Update(0x0050, newData, 5); /**< Update only changed bytes */
 ```
 
 ---
@@ -514,7 +514,7 @@ e2prom_int32_Read(0x0220, &largeValue); /**< Read signed 32-bit value from addre
 ### **Update Signed 8-bit Value**
 
 ```c
-void e2prom_int8_Upate(uint16_t _address, int8_t _Value);
+void e2prom_int8_Update(uint16_t _address, int8_t _Value);
 ```
 
 * Updates a signed 8-bit value with wear-leveling optimization.
@@ -526,7 +526,7 @@ void e2prom_int8_Upate(uint16_t _address, int8_t _Value);
 **Example:**
 
 ```c
-e2prom_int8_Upate(0x0200, -25); /**< Update only if different from stored value */
+e2prom_int8_Update(0x0200, -25); /**< Update only if different from stored value */
 ```
 
 ---
@@ -534,7 +534,7 @@ e2prom_int8_Upate(0x0200, -25); /**< Update only if different from stored value 
 ### **Update Signed 16-bit Value**
 
 ```c
-void e2prom_int16_Upate(uint16_t _address, int16_t _Value);
+void e2prom_int16_Update(uint16_t _address, int16_t _Value);
 ```
 
 * Updates a signed 16-bit value with wear-leveling optimization.
@@ -546,7 +546,7 @@ void e2prom_int16_Upate(uint16_t _address, int16_t _Value);
 **Example:**
 
 ```c
-e2prom_int16_Upate(0x0210, -5000); /**< Update only if different */
+e2prom_int16_Update(0x0210, -5000); /**< Update only if different */
 ```
 
 ---
@@ -554,7 +554,7 @@ e2prom_int16_Upate(0x0210, -5000); /**< Update only if different */
 ### **Update Signed 32-bit Value**
 
 ```c
-void e2prom_int32_Upate(uint16_t _address, int32_t _Value);
+void e2prom_int32_Update(uint16_t _address, int32_t _Value);
 ```
 
 * Updates a signed 32-bit value with wear-leveling optimization.
@@ -567,7 +567,7 @@ void e2prom_int32_Upate(uint16_t _address, int32_t _Value);
 **Example:**
 
 ```c
-e2prom_int32_Upate(0x0220, -500000L); /**< Update only if different */
+e2prom_int32_Update(0x0220, -500000L); /**< Update only if different */
 ```
 
 ---
@@ -611,20 +611,20 @@ e2prom_Format(); /**< Erase entire EEPROM - takes ~3.4 seconds for ATmega328P */
 | `e2prom_uint32_Read`     | Read unsigned 32-bit value (4 bytes)                         |
 | `e2prom_float_Read`      | Read IEEE 754 float value (4 bytes)                          |
 | `e2prom_block_Read`      | Read array of bytes sequentially                             |
-| `e2prom_uint8_Upate`     | Update 8-bit value (write only if different)                 |
-| `e2prom_uint16_Upate`    | Update 16-bit value with wear-leveling                       |
-| `e2prom_uint32_Upate`    | Update 32-bit value with wear-leveling                       |
-| `e2prom_float_Upate`     | Update float value with epsilon comparison                   |
-| `e2prom_block_Upate`     | Update block of bytes (byte-by-byte comparison)              |
+| `e2prom_uint8_Update`     | Update 8-bit value (write only if different)                 |
+| `e2prom_uint16_Update`    | Update 16-bit value with wear-leveling                       |
+| `e2prom_uint32_Update`    | Update 32-bit value with wear-leveling                       |
+| `e2prom_float_Update`     | Update float value with epsilon comparison                   |
+| `e2prom_block_Update`     | Update block of bytes (byte-by-byte comparison)              |
 | `e2prom_int8_Write`      | Write signed 8-bit value to EEPROM                           |
 | `e2prom_int16_Write`     | Write signed 16-bit value (2 bytes, little-endian)           |
 | `e2prom_int32_Write`     | Write signed 32-bit value (4 bytes, little-endian)           |
 | `e2prom_int8_Read`       | Read signed 8-bit value from EEPROM                          |
 | `e2prom_int16_Read`      | Read signed 16-bit value (2 bytes)                           |
 | `e2prom_int32_Read`      | Read signed 32-bit value (4 bytes)                           |
-| `e2prom_int8_Upate`      | Update signed 8-bit value with wear-leveling                 |
-| `e2prom_int16_Upate`     | Update signed 16-bit value with wear-leveling                |
-| `e2prom_int32_Upate`     | Update signed 32-bit value with wear-leveling                |
+| `e2prom_int8_Update`      | Update signed 8-bit value with wear-leveling                 |
+| `e2prom_int16_Update`     | Update signed 16-bit value with wear-leveling                |
+| `e2prom_int32_Update`     | Update signed 32-bit value with wear-leveling                |
 | `e2prom_Format`          | Erase entire EEPROM (write 0xFF to all addresses)            |
 
 ---
@@ -670,7 +670,7 @@ int main(void)
         /**< Update only if value changed (wear-leveling) */
         if (readConfig.mode != 5)
         {
-            e2prom_uint8_Upate(0x0008, 5); /**< Write only if different */
+            e2prom_uint8_Update(0x0008, 5); /**< Write only if different */
         }
         
         /**< Wait some time before next operation */
@@ -683,7 +683,7 @@ int main(void)
 
 > [!IMPORTANT]
 > **Best Practices:**
-> - Always use Update functions (`e2prom_xxx_Upate`) instead of Write functions when possible to extend EEPROM lifespan.
+> - Always use Update functions (`e2prom_xxx_Update`) instead of Write functions when possible to extend EEPROM lifespan.
 > - EEPROM has a limited write endurance of 100,000 cycles per location.
 > - Multi-byte values are stored in little-endian format (LSB first).
 > - Each write operation takes ~3.3 ms and blocks execution.
