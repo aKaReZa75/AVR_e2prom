@@ -204,30 +204,6 @@ sei(); // Re-enable global interrupts
 
 ---
 
-## **EEPROM Ready Interrupt**
-
-The EEPROM Ready Interrupt (EERIE) can be enabled to notify when a write operation completes:
-
-```c
-/* Enable EEPROM Ready Interrupt */
-EECR |= (1<<EERIE);
-sei(); // Enable global interrupts
-
-/* Interrupt Service Routine */
-ISR(EE_READY_vect)
-{
-    /* Called when EEPROM write completes */
-    // Perform post-write actions here
-}
-```
-
-**Benefits:**
-- Non-blocking EEPROM writes
-- CPU can perform other tasks during 3.3 ms write time
-- Useful in time-critical applications
-
----
-
 ## **Preventing EEPROM Corruption During Power Loss**
 
 EEPROM writes take ~3.3 ms to complete. If power is lost during this time, the byte being written may be corrupted.
@@ -241,17 +217,25 @@ EEPROM writes take ~3.3 ms to complete. If power is lost during this time, the b
    ```
 
 2. **Implement Checksums:**
-   ```c
-   typedef struct {
-       uint8_t data;
-       uint8_t checksum;
-   } eeprom_entry_t;
-   
-   void write_with_checksum(uint16_t addr, uint8_t data) {
-       e2prom_uint8_Write(addr, data);
-       e2prom_uint8_Write(addr + 1, ~data); // Inverse as checksum
-   }
-   ```
+
+Use a CRC-8 (Cyclic Redundancy Check) (for example) instead of a simple bitwise inverse to detect data corruption in EEPROM. Store the data and its CRC-8 value in consecutive EEPROM addresses.
+
+```c
+typedef struct {
+    uint8_t data;
+    uint8_t crc;
+} eeprom_entry_t;
+
+void write_with_crc8(uint16_t addr, uint8_t data)
+{
+    uint8_t crc = calculate_crc8(&data, sizeof(data));
+
+    e2prom_uint8_Write(addr, data);
+    e2prom_uint8_Write(addr + 1U, crc);
+}
+```
+
+The `calculate_crc8()` function calculates the CRC-8 value for the given data. When reading the data, recalculate the CRC-8 and compare it with the stored value to detect potential data corruption.
 
 3. **Use Duplicate Storage:**
    ```c
@@ -263,168 +247,6 @@ EEPROM writes take ~3.3 ms to complete. If power is lost during this time, the b
 4. **Enable Brown-Out Detection (BOD):**
    - Configure BOD fuse to reset MCU before voltage drops too low
    - Prevents writes during unstable power conditions
-
----
-
-## **EEPROM Write Endurance and Wear-Leveling**
-
-Each EEPROM location is guaranteed for **100,000 write/erase cycles** minimum.
-
-### **Wear-Leveling Techniques:**
-
-**1. Read-Modify-Write Pattern:**
-```c
-/* Bad: Always writes */
-e2prom_uint8_Write(addr, new_value);
-
-/* Good: Only writes if changed */
-e2prom_uint8_Upate(addr, new_value);
-```
-
-**2. Rotating Storage:**
-```c
-/* Spread writes across multiple locations */
-uint8_t write_index = 0;
-
-void store_sensor_data(uint8_t data) {
-    uint16_t address = 0x0100 + write_index;
-    e2prom_uint8_Write(address, data);
-    write_index = (write_index + 1) % 100; // Rotate through 100 locations
-}
-```
-
-**3. Journaling/Circular Buffer:**
-```c
-/* Keep pointer to current write position */
-uint16_t current_position = 0;
-
-void append_log_entry(uint8_t entry) {
-    e2prom_uint8_Write(current_position, entry);
-    current_position = (current_position + 1) % 1024;
-}
-```
-
----
-
-## **EEPROM Register Access Examples**
-
-### **Example 1: Direct Register Access**
-```c
-#include <avr/io.h>
-#include <util/delay.h>
-
-void write_eeprom_direct(uint16_t addr, uint8_t data) {
-    /* Wait for previous write */
-    while(EECR & (1<<EEPE));
-    
-    /* Setup address and data */
-    EEAR = addr;
-    EEDR = data;
-    
-    /* Configure for erase+write */
-    EECR &= ~((1<<EEPM1) | (1<<EEPM0));
-    
-    /* Start write sequence */
-    cli();
-    EECR |= (1<<EEMPE);
-    EECR |= (1<<EEPE);
-    sei();
-}
-
-uint8_t read_eeprom_direct(uint16_t addr) {
-    /* Wait for previous write */
-    while(EECR & (1<<EEPE));
-    
-    /* Setup address */
-    EEAR = addr;
-    
-    /* Start read */
-    EECR |= (1<<EERE);
-    
-    /* Return data */
-    return EEDR;
-}
-```
-
-### **Example 2: Using e2prom Library**
-```c
-#include "aKaReZa.h"
-#include "e2prom.h"
-
-int main(void) {
-    /* Write operations */
-    e2prom_uint8_Write(0x0000, 42);
-    e2prom_uint16_Write(0x0010, 1234);
-    e2prom_float_Write(0x0020, 3.14159);
-    
-    /* Read operations */
-    uint8_t val8;
-    uint16_t val16;
-    float val_float;
-    
-    e2prom_uint8_Read(0x0000, &val8);
-    e2prom_uint16_Read(0x0010, &val16);
-    e2prom_float_Read(0x0020, &val_float);
-    
-    /* Update with wear-leveling */
-    e2prom_uint8_Upate(0x0000, 99); // Only writes if changed
-    
-    while(1) {
-        // Main loop
-    }
-}
-```
-
-### **Example 3: Multi-Byte Structure**
-```c
-typedef struct {
-    uint16_t id;
-    float temperature;
-    uint8_t status;
-    uint8_t checksum;
-} sensor_config_t;
-
-#define CONFIG_ADDR 0x0100
-
-void save_config(sensor_config_t *config) {
-    uint16_t addr = CONFIG_ADDR;
-    
-    /* Calculate checksum */
-    config->checksum = config->id + config->status;
-    
-    /* Write structure members */
-    e2prom_uint16_Write(addr, config->id);
-    addr += 2;
-    
-    e2prom_float_Write(addr, config->temperature);
-    addr += 4;
-    
-    e2prom_uint8_Write(addr, config->status);
-    addr += 1;
-    
-    e2prom_uint8_Write(addr, config->checksum);
-}
-
-bool load_config(sensor_config_t *config) {
-    uint16_t addr = CONFIG_ADDR;
-    
-    /* Read structure members */
-    e2prom_uint16_Read(addr, &config->id);
-    addr += 2;
-    
-    e2prom_float_Read(addr, &config->temperature);
-    addr += 4;
-    
-    e2prom_uint8_Read(addr, &config->status);
-    addr += 1;
-    
-    e2prom_uint8_Read(addr, &config->checksum);
-    
-    /* Verify checksum */
-    uint8_t calc_checksum = config->id + config->status;
-    return (calc_checksum == config->checksum);
-}
-```
 
 ---
 
@@ -480,37 +302,6 @@ Read:     [=READ=]
 - Access EEPROM during interrupt routines without protection
 - Exceed 100,000 writes to the same location
 - Rely on EEPROM for rapidly changing data
-
----
-
-## **Troubleshooting**
-
-| Problem                          | Possible Cause                        | Solution                                      |
-|----------------------------------|---------------------------------------|-----------------------------------------------|
-| Data not written                 | EEMPE→EEPE timing violation           | Set EEPE within 4 cycles of EEMPE            |
-| Write takes too long             | Previous write not completed          | Check EEPE bit before starting new write     |
-| Data corruption                  | Interrupt modified EECR               | Use cli()/sei() during write sequence        |
-| Unexpected values read           | Address out of range                  | Verify address is 0x0000-0x03FF              |
-| EEPROM wear-out                  | Too many writes to same location      | Implement wear-leveling techniques           |
-
----
-
-## **Register Quick Reference**
-
-```c
-/* EEPROM Registers */
-EEAR   // EEPROM Address Register (10-bit for ATmega328P)
-EEDR   // EEPROM Data Register (8-bit)
-EECR   // EEPROM Control Register
-
-/* EECR Bits */
-#define EERE   0  // EEPROM Read Enable
-#define EEPE   1  // EEPROM Program Enable
-#define EEMPE  2  // EEPROM Master Program Enable
-#define EERIE  3  // EEPROM Ready Interrupt Enable
-#define EEPM0  4  // EEPROM Programming Mode bit 0
-#define EEPM1  5  // EEPROM Programming Mode bit 1
-```
 
 ---
 
